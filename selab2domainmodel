@@ -1,0 +1,154 @@
+# Domain Model Documentation
+
+## 1. Domain Concepts
+
+### Step 1: Domain Concepts Identification
+
+| Concept | Type | Responsibility Description | Responsibility Type |
+|---------|------|----------------------------|---------------------|
+| SearchInterface | Boundary | Interface for user search interactions | Doing: Handle user input/output |
+| AccountInterface | Boundary | Interface for account management | Doing: Handle login/profile management |
+| WebmasterPortal | Boundary | Interface for website owners | Doing: Handle performance monitoring & requests |
+| CompliancePortal | Boundary | Interface for legal authorities | Doing: Handle legal requests |
+| SearchController | Control | Manage search flow and coordination | Doing: Coordinate search process |
+| AccountController | Control | Manage account operations | Doing: Handle authentication & profile updates |
+| RequestController | Control | Manage various requests | Doing: Process reports, updates, legal requests |
+| User | Entity | Represent system user | Knowing: User identity and basic info |
+| GuestUser | Entity | Represent unauthenticated user | Knowing: Session data and temporary identity |
+| RegisteredUser | Entity | Represent authenticated user | Knowing: Account details and preferences |
+| WebsiteOwner | Entity | Represent content provider | Knowing: Website information and ownership |
+| Authority | Entity | Represent legal entity | Knowing: Jurisdiction and authority level |
+| Query | Entity | Represent search request | Knowing: Search parameters and intent |
+| SearchSession | Entity | Represent search interaction period | Knowing: Session data and activity timeline |
+| SearchResult | Entity | Represent individual search result | Knowing: Result content and metadata |
+| Bookmark | Entity | Represent saved result | Knowing: Saved content reference and metadata |
+| SearchHistory | Entity | Record of user searches | Knowing: Historical search patterns |
+| IssueReport | Entity | User-submitted problem report | Knowing: Issue details and status |
+| UpdateRemovalRequest | Entity | Website owner content request | Knowing: Request details and target |
+| PerformanceMetrics | Entity | Search performance data | Knowing: Analytics and performance data |
+| LegalRequest | Entity | Legal/compliance request | Knowing: Legal requirements and status |
+
+
+## 2. Associations
+
+### Step 2: Domain Associations
+
+| Association Name | Association Description | Concept Pair |
+|------------------|-------------------------|--------------|
+| interacts_with | User interacts with system interfaces | User ↔ SearchInterface |
+| manages_flow | Controller manages use case flow | SearchController ↔ SearchInterface |
+| processes | Controller processes entity data | SearchController ↔ Query |
+| initiates | User starts search session | User ↔ SearchSession |
+| contains | Session contains multiple queries | SearchSession ↔ Query |
+| generates | Query produces search results | Query ↔ SearchResult |
+| maintains | User keeps bookmarks | RegisteredUser ↔ Bookmark |
+| references | Bookmark points to result | Bookmark ↔ SearchResult |
+| records | History logs user queries | SearchHistory ↔ Query |
+| submits_report | User reports issues | User ↔ IssueReport |
+| concerns | Report about specific result | IssueReport ↔ SearchResult |
+| creates_request | Owner makes update requests | WebsiteOwner ↔ UpdateRemovalRequest |
+| targets | Request affects specific result | UpdateRemovalRequest ↔ SearchResult |
+| monitors | Owner tracks performance | WebsiteOwner ↔ PerformanceMetrics |
+| submits_legal | Authority submits legal requests | Authority ↔ LegalRequest |
+| authenticates | System verifies user identity | AccountController ↔ RegisteredUser |
+| coordinates | Controller manages search process | SearchController ↔ SearchSession |
+| handles_requests | Controller processes various requests | RequestController ↔ IssueReport |
+| manages_account | Controller handles user profiles | AccountController ↔ User |
+| displays_data | Interface shows information | SearchInterface ↔ SearchResult |
+
+
+## 3. Attributes
+### Step 3: Domain Attributes
+
+| Concept | Attributes | Attribute Description |
+|---------|------------|----------------------|
+| **Boundary Concepts** | | |
+| SearchInterface | interfaceId | Unique identifier for the search interface |
+| | layoutType | Type of interface layout and design |
+| AccountInterface | interfaceId | Unique identifier for account interface |
+| | authRequired | Whether authentication is required |
+| WebmasterPortal | portalId | Unique identifier for webmaster portal |
+| | accessLevel | Permission level for portal access |
+| CompliancePortal | portalId | Unique identifier for compliance portal |
+| | securityLevel | Security clearance level required |
+| **Control Concepts** | | |
+| SearchController | controllerId | Unique identifier for search controller |
+| | searchAlgorithm | Algorithm used for search processing |
+| AccountController | controllerId | Unique identifier for account controller |
+| | authMethod | Authentication method used |
+| RequestController | controllerId | Unique identifier for request controller |
+| | requestType | Type of requests handled |
+| **Entity Concepts - User** | | |
+| User | userId | Unique identifier for the user |
+| | email | User's contact email address |
+| | name | User's display name |
+| GuestUser | sessionId | Temporary session identifier |
+| | ipAddress | User's network address |
+| RegisteredUser | password | Authentication credential |
+| | preferences | User's search and display preferences |
+| WebsiteOwner | websiteUrl | Owner's website address |
+| | contactEmail | Business contact email |
+| Authority | organization | Government/regulatory body name |
+| | jurisdiction | Legal authority scope |
+| **Entity Concepts - Search** | | |
+| Query | queryId | Unique query identifier |
+| | searchTerms | Words/phrases being searched |
+| | timestamp | When query was submitted |
+| | filters | Search constraints and parameters |
+| SearchSession | sessionId | Unique session identifier |
+| | startTime | When session began |
+| | endTime | When session ended |
+| SearchResult | resultId | Unique result identifier |
+| | title | Result title/heading |
+| | url | Web address of the result |
+| | snippet | Brief content preview |
+| | relevanceScore | Algorithmic relevance rating |
+| Bookmark | bookmarkId | Unique bookmark identifier |
+| | savedDate | When bookmark was created |
+| | folder | Organizational category |
+| SearchHistory | historyId | History record identifier |
+| | searchDate | Date of search activity |
+| **Entity Concepts - Management** | | |
+| IssueReport | reportId | Unique report identifier |
+| | description | Detailed problem description |
+| | reportType | Category of issue |
+| | status | Current resolution state |
+| UpdateRemovalRequest | requestId | Unique request identifier |
+| | targetUrl | URL being requested for change |
+| | requestType | Update or removal classification |
+| | reason | Justification for request |
+| | status | Request processing state |
+| PerformanceMetrics | metricsId | Metrics set identifier |
+| | websiteUrl | Website being measured |
+| | impressions | How often results are shown |
+| | clicks | How often results are clicked |
+| LegalRequest | requestId | Unique legal request identifier |
+| | requestType | Legal action category |
+| | description | Legal basis and details |
+| | status | Processing status |
+
+## 4. Generalizations
+ ### Step 4: Generalization Relationships
+
+| Child Concept | Parent Concept | Inheritance Basis |
+|---------------|----------------|-------------------|
+| GuestUser | User | Shares basic user identification attributes (userId, email, name) |
+| RegisteredUser | User | Inherits base user attributes, adds authentication and preferences |
+| WebsiteOwner | RegisteredUser | Inherits all user attributes, adds website management capabilities |
+| Authority | RegisteredUser | Inherits user attributes, adds legal authority attributes |
+
+
+## 5. Pre- and Post-Conditions
+
+### Step 5: Key Pre- and Post-Conditions
+
+| Use Case | Pre-Conditions | Post-Conditions |
+|----------|----------------|-----------------|
+| UC-01: Submit Query | Search interface available, internet access | Results displayed or error message shown |
+| UC-02: View Results | Valid query submitted, results available | Results viewed or user chooses to refine/open |
+| UC-05: Save Bookmark | User logged in, viewing search results | Bookmark saved to user's collection |
+| UC-06: Manage Account | User authenticated, account settings accessible | Account data updated and confirmed |
+| UC-07: Report Issue | Search results displayed | Issue report stored for moderator review |
+| UC-08: Request Update/Removal | URL currently indexed | Request recorded and forwarded for review |
+| UC-09: Monitor Performance | Website successfully indexed | Performance data reviewed by owner |
+| UC-10: Submit Legal Request | Authorized access to compliance portal | Request recorded, validated, assigned tracking ID |
